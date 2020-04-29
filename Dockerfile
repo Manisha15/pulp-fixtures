@@ -1,24 +1,3 @@
-# === Build fixtures (Fedora) =================================================
-FROM fedora:30 AS fedora-build
-
-RUN dnf -yq install \
-              createrepo \
-              docker \
-              fedpkg \
-              gpg \
-              jq \
-              make \
-              patch \
-              puppet \
-              python3-jinja2-cli \
-              rpm-build \
-              rpm-sign \
-              rsync
-
-ADD . /pulp-fixtures
-
-RUN make -C pulp-fixtures all-fedora
-
 # === Build fixtures (Debian) =================================================
 FROM debian:stretch AS debian-build
 
@@ -35,7 +14,6 @@ RUN make -C pulp-fixtures all-debian
 FROM nginx AS server
 
 RUN mkdir -p /usr/share/nginx/html/fixtures
-COPY --from=fedora-build pulp-fixtures/fixtures /usr/share/nginx/html/fixtures
 COPY --from=debian-build pulp-fixtures/fixtures /usr/share/nginx/html/fixtures
 
 # turn on autoindex
